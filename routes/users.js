@@ -18,13 +18,6 @@ router.post("/register", async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
         return res.status(400).json({ message: "Nom d'utilisateur et mot de passe sont requis." });
-    }  
-
-    // Vérification si le username est déjà utilisé
-    const usernameCheck = "SELECT * FROM users WHERE username = ?";
-    const [usernameCheckResult] = await db.query(usernameCheck, [username]);
-    if (usernameCheckResult.length > 0) {
-      return res.status(400).json({ message: "Cet username est déjà utilisé." });
     }
 
     const hashedpassword = await bcrypt.hash(password, 10);
@@ -44,28 +37,20 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
     try {
       const db = await connectToDb();
-      if (!db) { 
-        return res.status(500).json({ message: "Erreur de connexion à la base de données" });
-      }
+      if (!db) { return res.status(500).json({ message: "Erreur de connexion à la base de données" }) }
   
       const { username, password } = req.body;
-      if (!username || !password) {
-        return res.status(400).json({ message: "Nom d'utilisateur et mot de passe sont requis." });
-      }  
+      if (!username || !password) { return res.status(400).json({ message: "Nom d'utilisateur et mot de passe sont requis." }) }  
       
       const sql = "SELECT * FROM users WHERE username = ?";
       const [results] = await db.query(sql, [username]);
       
-      if (results.length === 0) { 
-        return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
-      }
+      if (results.length === 0) { return res.status(401).json({ message: 'Email ou mot de passe incorrect' }) }
   
       const user = results[0];
       const isMatch = await bcrypt.compare(password, user.password);
       
-      if (!isMatch) {
-        return res.status(401).json({ message: "Nom d'utilisateur ou mot de passe incorrect" });
-      }
+      if (!isMatch) { return res.status(401).json({ message: "Nom d'utilisateur ou mot de passe incorrect" }) }
   
       const token = jwt.sign(
         { id_user: user.id_user, username: user.username },
@@ -86,16 +71,12 @@ router.post("/login", async (req, res) => {
 router.get("/profile/:id", async (req, res) => {
   try {
     const db = await connectToDb();
-    if (!db) {
-      return res.status(500).json({ message: "Erreur à la base de données" });
-    }
+    if (!db) {  return res.status(500).json({ message: "Erreur à la base de données" }) }
 
     const userId = parseInt(req.params.id);
 
     const [results] = await db.query( `SELECT username FROM users WHERE id = ?`, [userId] );
-    if (results.length === 0) {
-      return res.status(404).json({ message: "Utilisateur non trouvé !" });
-    }
+    if (results.length === 0) { return res.status(404).json({ message: "Utilisateur non trouvé !" }) }
 
     res.status(200).json(results[0]);
   } catch (err) {
@@ -108,22 +89,18 @@ router.get("/profile/:id", async (req, res) => {
 router.put("/modifierProfile/:id", async (req, res) => {
   try {
     const db = await connectToDb();
-    if (!db) {
-      return res.status(500).json({ message: "Erreur de connexion à la base de données" });
-    }
+    if (!db) { return res.status(500).json({ message: "Erreur de connexion à la base de données" }) }
 
     const userId = req.params.id;
     const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ message: 'Username et password sont requis.' });
-    }
+
+    if (!username || !password) { return res.status(400).json({ message: 'Username et password sont requis.' }) }
 
     // Vérification si le username est déjà utilisé par un autre utilisateur
     const usernameCheck = "SELECT * FROM users WHERE username = ? AND id != ?";
-    const [usernameCheckResult] = await db.query(usernameCheck, [ username, userId ]);
-    if (usernameCheckResult.length > 0) {
-      return res.status(400).json({ message: "Ce nom d'utilisateur est déjà utilisé." });
-    }
+    const [usernameCheckResult] = await db.query(usernameCheck, [ username, userId ])
+
+    if (usernameCheckResult.length > 0) { return res.status(400).json({ message: "Ce nom d'utilisateur est déjà utilisé." }) }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -141,9 +118,7 @@ router.put("/modifierProfile/:id", async (req, res) => {
 router.delete("/supprimerProfile/:id", async (req, res) => {
   try {
     const db = await connectToDb();
-    if (!db) {
-      return res.status(500).json({ message: "Erreur à la base de données" });
-    }
+    if (!db) { return res.status(500).json({ message: "Erreur à la base de données" }) }
 
     const userId = parseInt(req.params.id);
 
