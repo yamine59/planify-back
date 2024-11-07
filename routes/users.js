@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 
 
 
+
 router.post("/register", async (req, res) => {
   try {
     const db = await connectToDb();
@@ -15,17 +16,21 @@ router.post("/register", async (req, res) => {
       return res.status(500).json({ message: "Erreur de connexion à la base de données" });
     }
 
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ message: "Nom d'utilisateur et mot de passe sont requis." });
+    const { username, password, password2 } = req.body;
+    if (!username || !password || !password2) {
+      return res.status(400).json({ message: "Nom d'utilisateur, mot de passe, et confirmation sont requis." });
     }
 
-    const hashedpassword = await bcrypt.hash(password, 10);
+    if (password !== password2) {
+      return res.status(400).json({ message: "Les mots de passe ne correspondent pas." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-    const [results] = await db.query(sql, [ username, hashedpassword ]);
+    const [results] = await db.query(sql, [username, hashedPassword]);
     
-    res.status(201).json({ message: "Utilisateur créé" });
+    res.status(201).json({ message: "Utilisateur créé avec succès" });
   } catch (err) {
     console.error("Erreur lors de la création de l'utilisateur :", err);
     res.status(500).send(err);
