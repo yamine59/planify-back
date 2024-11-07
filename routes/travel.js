@@ -33,7 +33,7 @@ router.post("/creationTravel/:id", async (req, res) => {
     const formattedDateEnd = formatDate(end_date);
 
     const sql = "INSERT INTO travel (name, destination, persons, start_date, end_date, description, amount, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    const [results] = await db.query(sql, [ name, destination, persons, formattedDateStart, formattedDateEnd, description, amount, userId ]);
+    const [results] = await db.query(sql, [name, destination, persons, formattedDateStart, formattedDateEnd, description, amount, userId]);
 
     res.status(201).json({ message: "Voyage créé" });
   } catch (err) {
@@ -54,8 +54,8 @@ router.put("/modifierTravel/:id/:id_travel", async (req, res) => {
     const { name, destination, persons, start_date, end_date, description } = req.body;
 
     if (!name || !destination || !start_date || !end_date || !description || !persons) {
-        return res.status(400).json({ message: "Tous les champs sont requis" });
-      }
+      return res.status(400).json({ message: "Tous les champs sont requis" });
+    }
 
     const formattedDateStart = formatDate(start_date);
     const formattedDateEnd = formatDate(end_date);
@@ -69,7 +69,7 @@ router.put("/modifierTravel/:id/:id_travel", async (req, res) => {
 
     const sql = `UPDATE travel SET name = ?, destination = ?, persons = ?, start_date = ?, end_date = ?, description = ?
                     WHERE id_travel = ? AND id_user = ?`;
-    const [results] = await db.query(sql, [name, destination, persons, formattedDateStart, formattedDateEnd, description, travelId, userId ]);
+    const [results] = await db.query(sql, [name, destination, persons, formattedDateStart, formattedDateEnd, description, travelId, userId]);
 
     res.status(200).json({ message: "Voyage modifié" });
   } catch (err) {
@@ -81,23 +81,39 @@ router.put("/modifierTravel/:id/:id_travel", async (req, res) => {
 
 
 router.delete("/supprimerTravel/:id/:id_travel", async (req, res) => {
-    try {
-      const db = await connectToDb();
-      if (!db) { return res.status(500).json({ message: "Erreur à la base de données" }) }
-  
-      const userId = req.params.id;
-      const travelId = req.params.id_travel;
-  
-      const deleteSQL = "DELETE FROM travel WHERE id_user = ? AND id_travel = ?";
-      await db.query(deleteSQL, [userId, travelId]);
-  
-      res.status(200).json({ message: "voyage supprimé avec succès" });
-    } catch (err) {
-      console.error("Erreur lors de la suppression du voyage :", err);
-      res.status(500).json({ message: "Erreur serveur", error: err });
-    }
-  });
+  try {
+    const db = await connectToDb();
+    if (!db) { return res.status(500).json({ message: "Erreur à la base de données" }) }
+
+    const userId = req.params.id;
+    const travelId = req.params.id_travel;
+
+    const deleteSQL = "DELETE FROM travel WHERE id_user = ? AND id_travel = ?";
+    await db.query(deleteSQL, [userId, travelId]);
+
+    res.status(200).json({ message: "voyage supprimé avec succès" });
+  } catch (err) {
+    console.error("Erreur lors de la suppression du voyage :", err);
+    res.status(500).json({ message: "Erreur serveur", error: err });
+  }
+});
+
+router.get("/showTravel/:id", async (req, res) => {
+  try {
+    const db = await connectToDb();
+    if (!db) { return res.status(500).json({ message: "Erreur à la base de données" }) }
+
+    const userId = req.params.id;
 
 
-  
+    const [results] = await db.query( `SELECT * FROM travel WHERE id_user = ?`, [userId] );
+
+    res.status(200).json({ message: "listes des voyages du user" , listtravel: results});
+  } catch (err) {
+    console.error("Erreur lors de la récuperation des voyage :", err);
+    res.status(500).json({ message: "Erreur serveur", error: err });
+  }
+});
+
+
 module.exports = router;
