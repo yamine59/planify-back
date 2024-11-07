@@ -26,6 +26,12 @@ app.use('/travel', travel);
 const activity = require('./routes/activity.js')
 app.use('/activity', activity);
 
+const hotel = require('./api/hotel.js')
+app.use('/hotel', hotel);
+
+const city = require('./api/city.js')
+app.use('/city', city);
+
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`)
 })
