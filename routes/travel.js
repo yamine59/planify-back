@@ -6,16 +6,7 @@ require("dotenv").config();
 const connectToDb = require("../db.js");
 const jwt = require("jsonwebtoken");
 
-function formatDate(date) {
-  if (!date) return null;
 
-  const parts = date.split("/");
-  if (parts.length === 3) {
-    const [day, month, year] = parts;
-    return `${year}-${month}-${day}`;
-  }
-  return null;
-}
 
 router.post("/creationTravel/:id", async (req, res) => {
   try {
@@ -29,12 +20,9 @@ router.post("/creationTravel/:id", async (req, res) => {
       return res.status(400).json({ message: "Tous les champs sont requis" });
     }
 
-    const formattedDateStart = formatDate(start_date);
-    const formattedDateEnd = formatDate(end_date);
-
     const sql = "INSERT INTO travel (name, destination, persons, start_date, end_date, description, amount, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    const [results] = await db.query(sql, [name, destination, persons, formattedDateStart, formattedDateEnd, description, amount, userId]);
-
+    const [results] = await db.query(sql, [name, destination, persons, start_date, end_date, description, amount, userId]);
+  
     res.status(201).json({ message: "Voyage créé" });
   } catch (err) {
     console.error("Erreur lors de la création du voyage :", err);
@@ -97,6 +85,8 @@ router.delete("/supprimerTravel/:id/:id_travel", async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error: err });
   }
 });
+
+
 
 router.get("/showTravel/:id", async (req, res) => {
   try {
