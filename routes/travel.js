@@ -96,7 +96,7 @@ router.get("/showTravel/:id", async (req, res) => {
     const userId = req.params.id;
 
 
-    const [results] = await db.query( `SELECT * FROM travel WHERE id_user = ?`, [userId] );
+    const [results] = await db.query( `SELECT * FROM travel WHERE id_user = ? ORDER by id_travel desc`, [userId] );
 
     res.status(200).json({ message: "listes des voyages du user" , listtravel: results});
   } catch (err) {
@@ -105,5 +105,21 @@ router.get("/showTravel/:id", async (req, res) => {
   }
 });
 
+router.get("/show1Travel/:id", async (req, res) => {
+  try {
+    const db = await connectToDb();
+    if (!db) { return res.status(500).json({ message: "Erreur à la base de données" }) }
+
+    const userId = req.params.id;
+
+
+    const [results] = await db.query( `SELECT * FROM travel WHERE id_travel = ? `, [userId] );
+
+    res.status(200).json({ message: "listes des voyages du user" , listtravel: results});
+  } catch (err) {
+    console.error("Erreur lors de la récuperation des voyage :", err);
+    res.status(500).json({ message: "Erreur serveur", error: err });
+  }
+});
 
 module.exports = router;
