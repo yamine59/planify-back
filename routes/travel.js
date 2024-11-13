@@ -32,32 +32,24 @@ router.post("/creationTravel/:id", async (req, res) => {
 
 
 
-router.put("/modifierTravel/:id/:id_travel", async (req, res) => {
+router.put("/modifierTravel/:id_travel", async (req, res) => {
   try {
     const db = await connectToDb();
     if (!db) { return res.status(500).json({ message: "Erreur de connexion à la base de données" }) }
 
-    const userId = req.params.id;
     const travelId = req.params.id_travel;
     const { name, destination, persons, start_date, end_date, description } = req.body;
 
-    if (!name || !destination || !start_date || !end_date || !description || !persons) {
-      return res.status(400).json({ message: "Tous les champs sont requis" });
-    }
-
-    const formattedDateStart = formatDate(start_date);
-    const formattedDateEnd = formatDate(end_date);
-
-    const checkSql = "SELECT * FROM travel WHERE id_travel = ? AND id_user = ?";
-    const [checkResults] = await db.query(checkSql, [travelId, userId]);
+    const checkSql = "SELECT * FROM travel WHERE id_travel = ?";
+    const [checkResults] = await db.query(checkSql, [travelId]);
 
     if (checkResults.length === 0) {
       return res.status(404).json({ message: "Voyage non trouvé" });
     }
 
     const sql = `UPDATE travel SET name = ?, destination = ?, persons = ?, start_date = ?, end_date = ?, description = ?
-                    WHERE id_travel = ? AND id_user = ?`;
-    const [results] = await db.query(sql, [name, destination, persons, formattedDateStart, formattedDateEnd, description, travelId, userId]);
+                    WHERE id_travel = ?`;
+    const [results] = await db.query(sql, [name, destination, persons, start_date, start_date, description, travelId ]);
 
     res.status(200).json({ message: "Voyage modifié" });
   } catch (err) {
