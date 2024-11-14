@@ -60,16 +60,15 @@ router.put("/modifierTravel/:id_travel", async (req, res) => {
 
 
 
-router.delete("/supprimerTravel/:id/:id_travel", async (req, res) => {
+router.delete("/supprimerTravel/:id_travel", async (req, res) => {
   try {
     const db = await connectToDb();
     if (!db) { return res.status(500).json({ message: "Erreur à la base de données" }) }
-
-    const userId = req.params.id;
+    
     const travelId = req.params.id_travel;
 
-    const deleteSQL = "DELETE FROM travel WHERE id_user = ? AND id_travel = ?";
-    await db.query(deleteSQL, [userId, travelId]);
+    const deleteSQL = "DELETE FROM travel WHERE id_travel = ?";
+    await db.query(deleteSQL, [travelId]);
 
     res.status(200).json({ message: "voyage supprimé avec succès" });
   } catch (err) {
@@ -97,7 +96,7 @@ router.get("/showTravel/:id", async (req, res) => {
   }
 });
 
-router.get("/show1Travel/:id", async (req, res) => {
+router.get("/showTheTravel/:id", async (req, res) => {
   try {
     const db = await connectToDb();
     if (!db) { return res.status(500).json({ message: "Erreur à la base de données" }) }
