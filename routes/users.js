@@ -51,7 +51,7 @@ router.post("/login", async (req, res) => {
           return res.status(500).json({ message: "Erreur de connexion à la base de données" });
       }
 
-      const sql = "SELECT * FROM users WHERE username = ?";
+      const sql = "SELECT * FROM users WHERE username = ?"
       const [results] = await db.query(sql, [username]);
 
       // Vérification de l'existence de l'utilisateur
