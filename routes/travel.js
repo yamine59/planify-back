@@ -97,6 +97,7 @@ router.get("/showTravel/:id", async (req, res) => {
 });
 
 router.get("/showTheTravel/:id", async (req, res) => {
+
   try {
     const db = await connectToDb();
     if (!db) { return res.status(500).json({ message: "Erreur à la base de données" }) }
