@@ -4,7 +4,7 @@ const mysql = require("mysql2");
 require("dotenv").config();
 const https = require("https");
 
-router.get("/city/:city_name", async (req, res) => {
+router.get("/:city_name", async (req, res) => {
   try {
     const cityName = req.params.city_name;
 
