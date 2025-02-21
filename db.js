@@ -18,7 +18,8 @@ const connectToDb = async () => {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
             database: process.env.DB_NAME,
-            password: process.env.DB_PASSWORD, // Ajout du mot de passe si nécessaire
+            password: process.env.DB_PASSWORD,
+            port: process.env.DB_PORT || 3306,
         });
 
         console.log(timeOnly, 'Connected to database.');

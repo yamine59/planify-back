@@ -11,28 +11,28 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use(cors({
-  origin: 'https://planify-yamine.netlify.app',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true
 }));
 
 connectToDb();
 
 const users = require('./routes/users.js')
-app.use('/users', users);
+app.use('/api/planify/users', users);
 
 const travel = require('./routes/travel.js')
-app.use('/travel', travel);
+app.use('/api/planify/travel', travel);
 
 const activity = require('./routes/activity.js')
-app.use('/activity', activity);
+app.use('/api/planify/activity', activity);
 
 const hotel = require('./api/hotel.js')
-app.use('/hotel', hotel);
+app.use('/api/planify/hotel', hotel);
 
 const city = require('./api/city.js')
-app.use('/city', city);
+app.use('/api/planify/city', city);
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`)
-})
+
+
+const PORT = process.env.PORT || 3003; // Définit un port par défaut si non défini dans .env
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
